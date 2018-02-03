@@ -1,4 +1,3 @@
-import Stack
 defmodule Calculator do
   @moduledoc """
   Basic idea: convert the infix expression to the postfix expression.
@@ -87,7 +86,7 @@ defmodule Calculator do
   """
   def compute(postfix, temp) do
     if length(postfix) == 0 do
-      {top, bottom} = List.pop_at(temp, 0)
+      {top, _bottom} = List.pop_at(temp, 0)
       top
     else
       [current_val | tail] = postfix
@@ -128,21 +127,50 @@ defmodule Calculator do
   end
 
   @doc """
+    Concat the digit that split apart
+  """
+  def concat_number_str(exp_list, new_list) do
+    if length(exp_list) == 0 or length(exp_list) == 1 do
+      if length(exp_list) == 0 do
+        new_list
+      else
+        [head | _tail] = exp_list
+        new_list ++ [head]
+      end
+    else
+      [head1 | tail1] = exp_list
+      [head2 | tail2] = tail1
+      if is_integer(str_parse(head1)) and is_integer(str_parse(head2)) do
+        concat_result = Enum.join([head1, head2], "")
+        concat_number_str([concat_result] ++ tail2, new_list)
+      else if is_binary(str_parse(head1)) and is_integer(str_parse(head2)) do
+        concat_number_str(tail1, new_list ++ [head1])
+      else if is_integer(str_parse(head1)) and is_binary(str_parse(head2)) do
+        concat_number_str(tail2, new_list ++ [head1] ++ [head2])
+      end
+      end
+      end
+    end
+  end
+
+  @doc """
     Given an expression
     1. remove all the space
     2. return all the characters in the string as a list
     3. as we will hit enter in the terminal and consider as a character, remove
     the enter.
-    4. parse each character in the list
-    5. build a postfix list using current expression list, an empty postfix list
+    4. Concat the integer string that split up
+    5. parse each character in the list
+    6. build a postfix list using current expression list, an empty postfix list
     and an empty stack
-    6. compute using postfix list
+    7. compute using postfix list
   """
   def eval(exp) do
     exp
     |> String.replace(" ", "")
     |> String.codepoints()
     |> List.delete("\n")
+    |> concat_number_str([])
     |> Enum.map(&str_parse/1)
     |> build_postfix([], Stack.new)
     |> compute([])
