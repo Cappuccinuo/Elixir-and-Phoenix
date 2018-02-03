@@ -1,0 +1,6 @@
+<p>page/index.html.eex</p>
+
+<form action="/form" method="post">
+  <p><input type="text" name="name" /></p>
+  <p><button type="submit" value="submit form"></p>
+</form>
