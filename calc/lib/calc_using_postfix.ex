@@ -2,25 +2,6 @@ defmodule Calculator do
   @moduledoc """
   Basic idea: convert the infix expression to the postfix expression.
   Reference: https://leetcode.com/problems/basic-calculator-iii/discuss/113598/
-  Lets look at (2+3)/(4*5)
-    (1) The '(' is pushed.
-    (2) The 2 is added to the output.
-    (3) The '+' is pushed on the stack.
-    (4) The 3 is added to the out; its now 23.
-    (5) The ')' triggers the '+' to be popped and added to output; its now 23+.
-    (6) The '(' is popped and discarded.
-    (7) The '/' is pushed.
-    (8) The '(' is pushed.
-    (9) The 4 is added to the output; its now 23+4
-    (10) The "*" is pushed.
-    (11) The 5 is added to the output; its now 23+45
-    (12) The  ')' triggers the '*' to be popped and added to output; its now 23+45*
-    (13) The eoln is now true, so if no invalid characters have been encountered.
-    all the tokens remaining on the stack are popped  and added to the output; its now  23+45*/
-    Now that you have the postfix string, you simply compute the result every
-    time you see an operator (using top 2 numbers from stack), then push the
-    result back to the stack. Since the expression is guaranteed to be valid,
-    the stack will eventually end up with 1 element and that is the result.
   """
   @priority %{"*" => 1, "/" => 1, "+" => 2, "-" => 2}
 
@@ -46,8 +27,7 @@ defmodule Calculator do
   end
 
   @doc """
-    build the postfix list when the head of current expression list is an
-    operation, and the ops stack is not empty
+    build the postfix list when the head of current expression list is an operation, and the ops stack is not empty
   """
 
   def build_postfix_op(exp_list, postfix, ops) do
@@ -99,8 +79,7 @@ defmodule Calculator do
   end
 
   @doc """
-    When the postfix is not empty, calculate using the top two elements in
-    temp, and push the result to temp
+    When the postfix is not empty, calculate using the top two elements in temp, and push the result to temp
   """
   def compute_portion(postfix, temp) do
     [op | tail] = postfix
@@ -115,8 +94,7 @@ defmodule Calculator do
   end
 
   @doc """
-    If the string is a integer string, transform it to a integer
-    Otherwise return current str(operation)
+    If the string is a integer string, transform it to a integer. Otherwise return current str(operation)
   """
 
   def str_parse(str) do
@@ -157,7 +135,7 @@ defmodule Calculator do
   end
 
   @doc """
-    deal with the situation that first character is a "-"
+    deal with the situation that first character is `a`
   """
   def deal_first_neg(exp_list) do
     [head1 | tail1] = exp_list
@@ -174,46 +152,16 @@ defmodule Calculator do
     end
   end
 
-  def deal_other_neg(exp_list, temp_list) do
-    if length(exp_list) == 0 or length(exp_list) == 1 do
-      if length(exp_list) == 0 do
-        temp_list
-      else
-        [head | _tail] = exp_list
-        temp_list ++ [head]
-      end
-    else
-      [head1 | tail1] = exp_list
-      if (head1 == "(") do
-        [head2 | tail2] = tail1
-        if head2 == "-" do
-          deal_other_neg(tail2, temp_list ++ [head1] ++ ["0"] ++ [head2])
-        end
-      else
-        deal_other_neg(tail1, temp_list ++ [head1])
-      end
-    end
-  end
-
   @doc """
-  if length(exp_list) == 0 or length(exp_list) == 1 do
-    if length(exp_list) == 0 do
-      temp_list
-    else
-      [head | _tail] = exp_list
-      temp_list ++ [head]
-    end
-  end
-    Given an expression
-    1. remove all the space
-    2. return all the characters in the string as a list
-    3. as we will hit enter in the terminal and consider as a character, remove
-    the enter.
-    4. Concat the integer string that split up
-    5. parse each character in the list
-    6. build a postfix list using current expression list, an empty postfix list
-    and an empty stack
-    7. compute using postfix list
+  Main Evaluation function.
+  Given an expression\n
+  1. remove all the space\n
+  2. return all the characters in the string as a list\n
+  3. as we will hit enter in the terminal and consider as a character, remove the enter.\n
+  4. Concat the integer string that split up\n
+  5. parse each character in the list\n
+  6. build a postfix list using current expression list, an empty postfix list and an empty stack\n
+  7. compute using postfix list
   """
   def eval(exp) do
     exp
@@ -221,15 +169,13 @@ defmodule Calculator do
     |> String.codepoints()
     |> List.delete("\n")
     |> concat_number_str([])
-    |> deal_first_neg()
-    #|> deal_other_neg([])
     |> Enum.map(&str_parse/1)
     |> build_postfix([], Stack.new)
     |> compute([])
   end
 
   @doc """
-    main function, loop forever
+    Main function.
   """
   def main do
     exp = IO.gets("> ")

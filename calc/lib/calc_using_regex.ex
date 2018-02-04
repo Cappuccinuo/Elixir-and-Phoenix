@@ -1,11 +1,8 @@
 defmodule Calc do
   @moduledoc """
-  Documentation for Calc.
+  A calculator based on regex matching.
   """
 
-  @doc """
-  Hello world.
-  """
   @extract_non_parenthesis ~r/\(([^()]+)\)/    # capture the string without ()
   @extract_add ~r/(\d+)(\+)(\d+)/
   @extract_subtract ~r/(\d+)(\-)(\d+)/
