@@ -28,6 +28,7 @@ defmodule MyCalculator do
     |> String.replace(" ", "")             # remove all the space
     |> String.codepoints                   # return all the characters in
                                            # the exp string as a list
+    |> List.delete("\n")                   # Delete the "\n"
     |> build(0, "+", Stack.new, Stack.new) # First stack: store digit and "("
                                            # Second stack: store op before "("
     |> get_sum                             # Sum up all the num in numStack
