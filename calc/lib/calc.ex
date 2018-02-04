@@ -147,6 +147,9 @@ defmodule Calculator do
         concat_number_str(tail1, new_list ++ [head1])
       else if is_integer(str_parse(head1)) and is_binary(str_parse(head2)) do
         concat_number_str(tail2, new_list ++ [head1] ++ [head2])
+      else if is_binary(str_parse(head1)) and is_binary(str_parse(head2)) do
+        concat_number_str(tail2, new_list ++ [head1] ++ [head2])
+      end
       end
       end
       end
@@ -154,6 +157,53 @@ defmodule Calculator do
   end
 
   @doc """
+    deal with the situation that first character is a "-"
+  """
+  def deal_first_neg(exp_list) do
+    [head1 | tail1] = exp_list
+    if head1 == "-" do
+      [head2 | tail2] = tail1
+      if is_integer(str_parse(head2)) do
+        concat_number = Enum.join([head1, head2], "")
+        [concat_number] ++ tail2
+      else
+        ["0"] ++ exp_list
+      end
+    else
+      exp_list
+    end
+  end
+
+  def deal_other_neg(exp_list, temp_list) do
+    if length(exp_list) == 0 or length(exp_list) == 1 do
+      if length(exp_list) == 0 do
+        temp_list
+      else
+        [head | _tail] = exp_list
+        temp_list ++ [head]
+      end
+    else
+      [head1 | tail1] = exp_list
+      if (head1 == "(") do
+        [head2 | tail2] = tail1
+        if head2 == "-" do
+          deal_other_neg(tail2, temp_list ++ [head1] ++ ["0"] ++ [head2])
+        end
+      else
+        deal_other_neg(tail1, temp_list ++ [head1])
+      end
+    end
+  end
+
+  @doc """
+  if length(exp_list) == 0 or length(exp_list) == 1 do
+    if length(exp_list) == 0 do
+      temp_list
+    else
+      [head | _tail] = exp_list
+      temp_list ++ [head]
+    end
+  end
     Given an expression
     1. remove all the space
     2. return all the characters in the string as a list
@@ -171,6 +221,8 @@ defmodule Calculator do
     |> String.codepoints()
     |> List.delete("\n")
     |> concat_number_str([])
+    |> deal_first_neg()
+    #|> deal_other_neg([])
     |> Enum.map(&str_parse/1)
     |> build_postfix([], Stack.new)
     |> compute([])
