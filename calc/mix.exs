@@ -12,7 +12,8 @@ defmodule Calc.MixProject do
       deps: deps(),
       description: "Calculator",
       package: package(),
-      aliases: aliases()
+      aliases: aliases(),
+      compilers: Mix.compilers
     ]
   end
 
