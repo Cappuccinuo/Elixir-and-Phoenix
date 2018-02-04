@@ -1,15 +1,18 @@
 defmodule Calc.MixProject do
   use Mix.Project
+  def version(), do: "1.0.0"
 
   def project do
     [
       app: :calc,
-      version: "0.1.0",
+      version: version(),
       elixir: "~> 1.6",
+      build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       description: "Calculator",
-      package: package()
+      package: package(),
+      aliases: aliases()
     ]
   end
 
@@ -17,6 +20,12 @@ defmodule Calc.MixProject do
   def application do
     [
       extra_applications: [:logger]
+    ]
+  end
+
+  defp aliases do
+    [
+      build: [ &build_releases/1],
     ]
   end
 
@@ -35,5 +44,13 @@ defmodule Calc.MixProject do
       licenses: ["MIT"],
       links: %{"GitHub" => "https://github.com/Cappuccinuo/Elixir-and-Phoenix/tree/master/calc"}
     ]
+  end
+
+  defp build_releases(_) do
+    Mix.Tasks.Compile.run([])
+    Mix.Tasks.Archive.Build.run([])
+    Mix.Tasks.Archive.Build.run(["--output=calc.ez"])
+    File.rename("calc.ez", "./calc_archives/calc.ez")
+    File.rename("calc-#{version()}.ez", "./calc_archives/calc-#{version()}.ez")
   end
 end
