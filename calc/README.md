@@ -11,5 +11,6 @@ https://hexdocs.pm/calc/0.1.0/
 MyCalculator can finish all the calculation related to `+`, `-`, `*`, `/`,`()`.
 The other two can only deal with non-negative calculation.
 
-## Guide 
-Download or clone this repository, execute `mix run -e MyCalculator.main`.
+## Guide
+Download or clone this repository, execute `mix run -e MyCalculator.main`. To exit, just
+execute `Control + C` two times.
