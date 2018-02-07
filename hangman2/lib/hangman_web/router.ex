@@ -18,6 +18,7 @@ defmodule HangmanWeb.Router do
 
     get "/", PageController, :index
     # My code start
+    # get "/games/:game_name", PageController, :game
     get "/game/:game", PageController, :game
     # My code ends
   end

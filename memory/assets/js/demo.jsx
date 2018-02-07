@@ -4,11 +4,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Button } from 'reactstrap';
 
-// Set the card type and match number
-const uniqueCards = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
-
-export default function run_demo(root) {
-  ReactDOM.render(<Board/>, root);
+export default function run_demo(root, channel) {
+  ReactDOM.render(<Board channel={channel}/>, root);
 }
 
 class Square extends React.Component {
@@ -37,30 +34,33 @@ class Board extends React.Component {
     this.restart = this.restart.bind(this);
     this.resetTime = null;
     this.state = this.initialState();
+    this.channel = props.channel;
+    this.channel.join()
+                .receive("ok", this.gotView.bind(this))
+                .receive("error", resp => {console.log("Unable to join", resp)});
   }
 
   initialState() {
     return {
-      squares: this.shuffleDeck(),
-      selected: [],
       pairs: [],
-      steps: 0,
     };
+  }
+
+  gotView(view) {
+    console.log("New view", view);
+    this.setState(view.game)
+  }
+
+  sendSelection(ev) {
+    this.channel.push("guess", {card: ev.key})
+                .receive("ok", this.gotView.bind(this))
   }
 
   restart() {
     this.setState(this.initialState());
   }
 
-  shuffleDeck() {
-    let deck = uniqueCards.slice();
-    deck = deck.concat(deck);
-    deck = _.shuffle(deck);
-    return deck;
-  }
-
   handleClick(i) {
-    this.setState({steps: this.state.steps + 1})
     if (this.state.selected.includes(i) || this.resetTime) {
       return;
     }
@@ -93,15 +93,6 @@ class Board extends React.Component {
     this.resetTime = null;
 
     if (this.state.pairs.length === this.state.squares.length) {
-      if (this.state.steps <= 50) {
-        alert("Good Job!");
-      }
-      else if (this.state.steps >= 50 && this.state.steps < 100) {
-        alert("Not Bad!");
-      }
-      else {
-        alert("Come on!");
-      }
     }
   }
 
@@ -127,16 +118,12 @@ class Board extends React.Component {
   }
 
   render() {
-    const score = "Score: ";
     const gameboard = this.gameBoard();
 
     return (
       <div>
         <div className="restart">
           <button onClick={this.restart}>Restart</button>
-        </div>
-        <div className="score">
-          <span>Score: {200 - this.state.steps}</span>
         </div>
         <div className="game">
           {gameboard}

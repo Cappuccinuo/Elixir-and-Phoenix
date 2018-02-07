@@ -1,6 +1,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
-<h1>Memory Game</h1>
+<h1>Join a Memory Game</h1>
 
-<div id="game">
-  Loading...
-</div>
+<p>
+  <a href="/game/demo">Join</a>
+</p>
