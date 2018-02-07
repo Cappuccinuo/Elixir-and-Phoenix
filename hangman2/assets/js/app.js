@@ -18,32 +18,36 @@ import "phoenix_html";
 // Local files can be imported directly using relative
 // paths "./socket" or full ones "web/static/js/socket".
 
-// Add the socket import
+// Add the socket import, can join channels
 import socket from "./socket"
 
 function form_init() {
+  // channel name : demo
   let channel = socket.channel("games:demo", {});
-  channel.join()
-         .receive("ok", resp => {console.log("Joined successfully", resp)})
-         .receive("error", resp => {console.log("Unable to join", resp)});
+  //channel.join()
+  //       .receive("ok", resp => {console.log("Joined successfully", resp)})
+  //       .receive("error", resp => {console.log("Unable to join", resp)});
 
-  $('#game-button').click(() => {
-    let xx = $('#game-input').val();
-    channel.push("guess", { xx : xx}).receive("guess", msg => {
-      $('#game-output').text(msg.yy);
-    });
-  });
+  //$('#game-button').click(() => {
+  //let xx = $('#game-input').val();
+  //  channel.push("double", { xx : xx}).receive("doubled", msg => {
+  //    $('#game-output').text(msg.yy);
+  //  });
+  //});
 }
 
 import game_init from "./hangman";
 
 function start() {
   let root = document.getElementById('root');
+  if (!root) {
+    return;
+  }
   if (root) {
     let channel = socket.channel("games:" + window.gameName, {});
-    channel.join()
-           .receive("ok", resp => {console.log("Joined successfully", resp)})
-           .receive("error", resp => {console.log("Unable to join", resp)});
+    //channel.join()
+    //       .receive("ok", resp => {console.log("Joined successfully", resp)})
+    //       .receive("error", resp => {console.log("Unable to join", resp)});
     game_init(root, channel);
   }
 

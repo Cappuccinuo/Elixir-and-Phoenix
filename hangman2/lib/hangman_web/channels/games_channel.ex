@@ -17,7 +17,7 @@ defmodule HangmanWeb.GamesChannel do
       socket = socket
       |> assign(:game, game)
       |> assign(:name, name)
-      {:ok, %{"join" => name, "game" => Game.client_view(game)}, socket}
+      {:ok, %{"join_channel" => name, "game" => Game.client_view(game)}, socket}
     else
       {:error, %{reason: "unauthorized"}}
     end
@@ -25,9 +25,9 @@ defmodule HangmanWeb.GamesChannel do
 
   # Channels can be used in a request/response fashion
   # by sending replies to requests from the client
-  #def handle_in("ping", payload, socket) do
-  #  {:reply, {:ok, payload}, socket}
-  #end
+  def handle_in("ping", payload, socket) do
+    {:reply, {:ok, payload}, socket}
+  end
 
   def handle_in("guess", %{"letter" => l1}, socket) do
     game = Game.guess(socket.assigns[:game], l1)

@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Button } from 'reactstrap';
 
-export default function game_init(root) {
+export default function game_init(root, channel) {
   ReactDOM.render(<HangmanGame channel={channel} />, root);
 }
 
@@ -32,7 +32,7 @@ class HangmanGame extends React.Component {
       max: 10
     };
 
-    // My code
+    // Give the initial view
     this.channel.join()
                 .receive("ok", this.gotView.bind(this))
                 .receive("error", resp => {console.log("Unable to join", resp)});
@@ -49,33 +49,6 @@ class HangmanGame extends React.Component {
         .receive("ok", this.gotView.bind(this));
   }
   // code ends
-
-  wordLetters() {
-    return this.state.word.split("");
-  }
-
-  guessLetters() {
-    return _.uniq(this.state.guesses.split(""));
-  }
-
-  badGuessLetters() {
-    let goods = this.wordLetters();
-    let bads = [];
-    this.guessLetters().forEach( (gg) => {
-      if (!goods.includes(gg)) {
-        bads.push(gg);
-      }
-    });
-    return bads;
-  }
-
-  setGuesses(ev) {
-    let input = $(ev.target);
-    let st1 = _.extend(this.state, {
-      guesses: input.val(),
-    });
-    this.setState(st1);
-  }
 
   render() {
     return (
@@ -99,7 +72,7 @@ class HangmanGame extends React.Component {
 
 function Word(params) {
   //let root = params.root;
-  let root = params.state;
+  let state = params.state;
   /*
   let guesses = root.guessLetters();
   let letters = _.map(root.wordLetters(), (xx, ii) => {
@@ -108,7 +81,7 @@ function Word(params) {
   });
   */
   let letters = _.map(state.skel, (xx, ii) => {
-    return <span style={{padding: "lex"}} key={ii}>{xx}</span>;
+    return <span style={{padding: "1ex"}} key={ii}>{xx}</span>;
   });
 
   return (
@@ -138,6 +111,6 @@ function Guesses(params) {
 function GuessInput(params) {
   return <div>
     <p><b>Type Your Guesses</b></p>
-    <p><input type="text" onChange={params.guess} /></p>
+    <p><input type="text" onKeyPress={params.guess} /></p>
   </div>;
 }

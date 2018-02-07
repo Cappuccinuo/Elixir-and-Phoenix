@@ -45,6 +45,7 @@ defmodule Hangman.Game do
   end
 
   def next_word do
+    # ~w() generate lists of words
     words = ~w(
       horse snake jazz violin
       muffin cookie pizza sandwich

@@ -41193,19 +41193,18 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // If you no longer want to use a dependency, remember
 // to also remove its path from "config.paths.watched".
 function form_init() {
+  // channel name : demo
   var channel = _socket2.default.channel("games:demo", {});
-  channel.join().receive("ok", function (resp) {
-    console.log("Joined successfully", resp);
-  }).receive("error", function (resp) {
-    console.log("Unable to join", resp);
-  });
+  //channel.join()
+  //       .receive("ok", resp => {console.log("Joined successfully", resp)})
+  //       .receive("error", resp => {console.log("Unable to join", resp)});
 
-  $('#game-button').click(function () {
-    var xx = $('#game-input').val();
-    channel.push("guess", { xx: xx }).receive("guess", function (msg) {
-      $('#game-output').text(msg.yy);
-    });
-  });
+  //$('#game-button').click(() => {
+  //let xx = $('#game-input').val();
+  //  channel.push("double", { xx : xx}).receive("doubled", msg => {
+  //    $('#game-output').text(msg.yy);
+  //  });
+  //});
 }
 
 // Import local files
@@ -41213,18 +41212,19 @@ function form_init() {
 // Local files can be imported directly using relative
 // paths "./socket" or full ones "web/static/js/socket".
 
-// Add the socket import
+// Add the socket import, can join channels
 
 
 function start() {
   var root = document.getElementById('root');
+  if (!root) {
+    return;
+  }
   if (root) {
     var channel = _socket2.default.channel("games:" + window.gameName, {});
-    channel.join().receive("ok", function (resp) {
-      console.log("Joined successfully", resp);
-    }).receive("error", function (resp) {
-      console.log("Unable to join", resp);
-    });
+    //channel.join()
+    //       .receive("ok", resp => {console.log("Joined successfully", resp)})
+    //       .receive("error", resp => {console.log("Unable to join", resp)});
     (0, _hangman2.default)(root, channel);
   }
 
@@ -41266,7 +41266,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-function game_init(root) {
+function game_init(root, channel) {
   _reactDom2.default.render(_react2.default.createElement(HangmanGame, { channel: channel }), root);
 }
 
@@ -41300,7 +41300,7 @@ var HangmanGame = function (_React$Component) {
       max: 10
     };
 
-    // My code
+    // Give the initial view
     _this.channel.join().receive("ok", _this.gotView.bind(_this)).receive("error", function (resp) {
       console.log("Unable to join", resp);
     });
@@ -41323,37 +41323,6 @@ var HangmanGame = function (_React$Component) {
     }
     // code ends
 
-  }, {
-    key: 'wordLetters',
-    value: function wordLetters() {
-      return this.state.word.split("");
-    }
-  }, {
-    key: 'guessLetters',
-    value: function guessLetters() {
-      return _.uniq(this.state.guesses.split(""));
-    }
-  }, {
-    key: 'badGuessLetters',
-    value: function badGuessLetters() {
-      var goods = this.wordLetters();
-      var bads = [];
-      this.guessLetters().forEach(function (gg) {
-        if (!goods.includes(gg)) {
-          bads.push(gg);
-        }
-      });
-      return bads;
-    }
-  }, {
-    key: 'setGuesses',
-    value: function setGuesses(ev) {
-      var input = $(ev.target);
-      var st1 = _.extend(this.state, {
-        guesses: input.val()
-      });
-      this.setState(st1);
-    }
   }, {
     key: 'render',
     value: function render() {
@@ -41389,7 +41358,7 @@ var HangmanGame = function (_React$Component) {
 
 function Word(params) {
   //let root = params.root;
-  var root = params.state;
+  var state = params.state;
   /*
   let guesses = root.guessLetters();
   let letters = _.map(root.wordLetters(), (xx, ii) => {
@@ -41400,7 +41369,7 @@ function Word(params) {
   var letters = _.map(state.skel, function (xx, ii) {
     return _react2.default.createElement(
       'span',
-      { style: { padding: "lex" }, key: ii },
+      { style: { padding: "1ex" }, key: ii },
       xx
     );
   });
@@ -41485,7 +41454,7 @@ function GuessInput(params) {
     _react2.default.createElement(
       'p',
       null,
-      _react2.default.createElement('input', { type: 'text', onChange: params.guess })
+      _react2.default.createElement('input', { type: 'text', onKeyPress: params.guess })
     )
   );
 }
@@ -41554,13 +41523,12 @@ var socket = new _phoenix.Socket("/socket", { params: { token: window.userToken 
 // and connect at the socket path in "lib/web/endpoint.ex":
 socket.connect();
 
+// Create and join a channel
 // Now that you are connected, you can join channels with a topic:
-var channel = socket.channel("topic:subtopic", {});
-channel.join().receive("ok", function (resp) {
-  console.log("Joined successfully", resp);
-}).receive("error", function (resp) {
-  console.log("Unable to join", resp);
-});
+// let channel = socket.channel("topic:subtopic", {})
+//channel.join()
+//  .receive("ok", resp => { console.log("Joined successfully", resp) })
+//  .receive("error", resp => { console.log("Unable to join", resp) })
 
 exports.default = socket;
 
