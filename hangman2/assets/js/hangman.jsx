@@ -91,7 +91,6 @@ function Word(params) {
     </div>
   );
 }
-
 function Lives(params) {
   let state = params.state;
   return <div>

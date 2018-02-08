@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom';
 import { Button } from 'reactstrap';
 
 export default function run_demo(root, channel) {
-  ReactDOM.render(<Board channel={channel}/>, root);
+  ReactDOM.render(<MemoryGame channel={channel}/>, root);
 }
 
 class Square extends React.Component {
@@ -131,4 +131,63 @@ class Board extends React.Component {
       </div>
     );
   }
+}
+
+class MemoryGame extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      turned: [],
+      cards: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+      show: [],
+    }
+    this.channel = props.channel;
+    this.channel.join()
+                .receive("ok", this.gotView.bind(this))
+                .receive("error", resp => {console.log("Unable to join", resp)});
+  }
+
+  gotView(view) {
+    console.log("New view", view);
+    this.setState(view.game);
+  }
+
+  sendGuess(i) {
+    this.channel.push("test", {"card": i})
+                .receive("ok", this.gotView.bind(this));
+  }
+
+  render() {
+    return (
+    <div>
+      <div>
+        {this.state.cards.map((card, i) => {
+          return <Button
+            value= {i}
+            onClick={() => this.sendGuess(i)}
+            key={i}>Number: {i}</Button>;
+        }, this)}
+      </div>
+      <div>
+        <ButtonValue state={this.state} />
+        <TestValue state={this.state} />
+      </div>
+    </div>
+    );
+  }
+}
+
+function TestValue(params) {
+  let state = params.state;
+  return <div>
+    <p>Test Value: {state.show}</p>
+    <p>Test Value2: {state.turned}</p>
+  </div>
+}
+
+function ButtonValue(params) {
+  let state = params.state;
+  return <div>
+    <p>Button Value: {state.turned.length}</p>
+  </div>
 }
