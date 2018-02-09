@@ -7,6 +7,7 @@ defmodule Memory.Game do
       scard: [],      # selected card
       pairs: [],      # pairs card
       indices: [],    # pairs index
+      moves: 0,
     }
   end
 
@@ -17,29 +18,26 @@ defmodule Memory.Game do
     pa = game.pairs
     ind = game.indices
     ca = game.cards
+    mv = game.moves
     %{
       tests: skeleton(sq, ca, ind, sl),
       turned: pa,
       index: ind,
       show: sl,
+      step: mv
     }
-  end
-
-  def match(game, squares, selected, pairs) do
-    if (length(selected) == 2) do
-      [first | tail1] = selected
-      [second | tail2] = tail1
-      if (Enum.at(squares, first) == Enum.at(squares, second)) do
-        pairs = pairs ++ [Enum.at(squares, first)] ++ [Enum.at(squares, second)]
-      end
-    end
-    pairs
   end
 
   def set(game, flag) do
     if flag == true do
       game = Map.put(game, :selected, [])
       Map.put(game, :scard, [])
+    end
+  end
+
+  def reset(game, flag) do
+    if flag == true do
+      game = new() 
     end
   end
 
@@ -56,6 +54,7 @@ defmodule Memory.Game do
   def test(game, card) do
     sq = game.squares
     ind = game.indices
+    mv = game.moves
     if length(game.selected) == 2 do
       se = [card]
       sc = [Enum.at(sq, card)]
@@ -79,6 +78,7 @@ defmodule Memory.Game do
     game = Map.put(game, :pairs, pa)
     game = Map.put(game, :indices, ind)
     game = Map.put(game, :selected, se)
+    game = Map.put(game, :moves, mv + 1)
     Map.put(game, :scard, sc)
   end
 
@@ -87,6 +87,6 @@ defmodule Memory.Game do
       A B C D E F G H
     )
     deck ++ deck
-    #Enum.shuffle(deck ++ deck)
+    Enum.shuffle(deck ++ deck)
   end
 end

@@ -1,8 +1,12 @@
 defmodule MemoryWeb.GamesChannel do
   use MemoryWeb, :channel
   alias Memory.Game
+  alias Memory.BackupChannel.Monitor
   def join("games:" <> name, payload, socket) do
     if authorized?(payload) do
+      #game = Repo.get(Game, name)
+      #send(self, {:after_join, game})
+      #{:ok, %{game: game}, assign(socket, :game, game)}
       game = Game.new()
       socket = socket
       |> assign(:game, game)
@@ -13,6 +17,12 @@ defmodule MemoryWeb.GamesChannel do
     end
   end
 
+  #def handle_info({:after_join}, socket) do
+  #  Monitor.get_game_state(name)
+  #  broadcast! socket, "user:joined", {game_state: game_state(name)}
+  #  {:noreply, socket}
+  #end
+
   def handle_in("reset", %{"clear" => f}, socket) do
     game = Game.set(socket.assigns[:game], f)
     socket = assign(socket, :game, game)
@@ -21,6 +31,12 @@ defmodule MemoryWeb.GamesChannel do
 
   def handle_in("test", %{"card" => c}, socket) do
     game = Game.test(socket.assigns[:game], c)
+    socket = assign(socket, :game, game)
+    {:reply, {:ok, %{"game" => Game.client_view(game)}}, socket}
+  end
+
+  def handle_in("restart", %{"renew" => g}, socket) do
+    game = Game.new()
     socket = assign(socket, :game, game)
     {:reply, {:ok, %{"game" => Game.client_view(game)}}, socket}
   end

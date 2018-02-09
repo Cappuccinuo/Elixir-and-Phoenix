@@ -37,6 +37,7 @@ class MemoryGame extends React.Component {
       show: [],
       index: [],
       tests:[],
+      step: 0,
     }
     this.channel = props.channel;
     this.channel.join()
@@ -70,9 +71,20 @@ class MemoryGame extends React.Component {
     this.resetTime = null;
   }
 
+  sendRestart() {
+    this.channel.push("restart", {"renew": true})
+                .receive("ok", this.gotView.bind(this));
+  }
+
   render() {
     return (
     <div>
+      <div className="restart">
+        <button onClick={() => this.sendRestart()}>Restart</button>
+      </div>
+      <div className="score">
+        <span>Score: {200 - this.state.step}</span>
+      </div>
       <div className="game">
         {this.state.tests.map((card, i) => {
           return <Square
@@ -99,6 +111,7 @@ function TestValue(params) {
     <p>Turned Value2: {state.turned}</p>
     <p>Turned Indices: {state.index}</p>
     <p>Cards:{state.tests}</p>
+    <p>Steps:{state.step}</p>
   </div>
 }
 
