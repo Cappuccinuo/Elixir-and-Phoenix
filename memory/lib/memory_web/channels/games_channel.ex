@@ -13,8 +13,8 @@ defmodule MemoryWeb.GamesChannel do
     end
   end
 
-  def handle_in("guess", %{"card" => c1}, socket) do
-    game = Game.match(socket.assigns[:game], c1)
+  def handle_in("reset", %{"clear" => f}, socket) do
+    game = Game.set(socket.assigns[:game], f)
     socket = assign(socket, :game, game)
     {:reply, {:ok, %{"game" => Game.client_view(game)}}, socket}
   end
