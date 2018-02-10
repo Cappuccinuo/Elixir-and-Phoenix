@@ -3,83 +3,77 @@ defmodule Memory.Game do
     %{
       squares: shuffle_deck(),
       cards: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
-      selected: [],   # selected index
-      scard: [],      # selected card
-      pairs: [],      # pairs card
-      indices: [],    # pairs index
+      selected_indices: [],    # selected index
+      selected_value: [],      # selected card
+      paired_value: [],        # pairs card
+      paired_indices: [],      # pairs index
       moves: 0,
     }
   end
 
   def client_view(game) do
-    sq = game.squares
-    sl = game.selected
-    si = game.scard
-    pa = game.pairs
-    ind = game.indices
-    ca = game.cards
-    mv = game.moves
+    deck = game.squares               # The shuffled deck
+    card_indices = game.cards         # The card indices
+    selected_indices = game.selected_indices  # The selected card indices
+    paired_indices = game.paired_indices     # The paired card indices
     %{
-      tests: skeleton(sq, ca, ind, sl),
-      turned: pa,
-      index: ind,
-      show: sl,
-      step: mv
+      skel: skeleton(deck, card_indices, paired_indices, selected_indices),
+      completed: paired_indices,
+      show: selected_indices,
+      step: game.moves              # The total steps so far
     }
   end
 
-  def set(game, flag) do
-    if flag == true do
-      game = Map.put(game, :selected, [])
-      Map.put(game, :scard, [])
-    end
+  def set(game, _flag) do
+      game
+      |> Map.put(:selected_indices, [])
+      |> Map.put(:selected_value, [])
   end
 
-  def reset(game, flag) do
-    if flag == true do
-      game = new() 
-    end
-  end
-
-  def skeleton(squares, cards, indices, selected) do
-    Enum.map cards, fn i ->
-      if Enum.member?(selected, i) or Enum.member?(indices, i) do
-        Enum.at(squares, i)
+  def skeleton(deck, card_indices, paired_indices, selected_indices) do
+    Enum.map card_indices, fn i ->
+      if Enum.member?(selected_indices, i) or Enum.member?(paired_indices, i) do
+        Enum.at(deck, i)
       else
         "?"
       end
     end
   end
 
-  def test(game, card) do
-    sq = game.squares
-    ind = game.indices
-    mv = game.moves
-    if length(game.selected) == 2 do
-      se = [card]
-      sc = [Enum.at(sq, card)]
+  def guess(game, card) do
+    deck = game.squares
+    paired_indices = game.paired_indices
+    selected_indices = game.selected_indices
+    selected_value = game.selected_value
+
+    if length(selected_indices) == 2 do
+      selected_indices = [card]
+      selected_value = [Enum.at(deck, card)]
     else
-      se = game.selected ++ [card]
-      sc = game.scard ++ [Enum.at(sq, card)]
+      selected_indices = selected_indices ++ [card]
+      selected_value = selected_value ++ [Enum.at(deck, card)]
     end
-    pa = game.pairs
-    if (length(se) == 2) do
-      [first | tail1] = se
+
+    paired_value = game.paired_value
+    if (length(selected_indices) == 2) do
+      [first | tail1] = selected_indices
       [second | tail2] = tail1
-      f = Enum.at(sq, first)
-      s = Enum.at(sq, second)
-      if (!Enum.member?(pa, f) and !Enum.member?(pa, s)) do
-        if (Enum.at(sq, first) == Enum.at(sq, second)) do
-          pa = pa ++ [Enum.at(sq, first)] ++ [Enum.at(sq, second)]
-          ind = ind ++ [first] ++ [second]
+      fval = Enum.at(deck, first)
+      sval = Enum.at(deck, second)
+      if (!Enum.member?(paired_value, fval) and !Enum.member?(paired_value, sval)) do
+        if (Enum.at(deck, first) == Enum.at(deck, second)) do
+          paired_value = paired_value ++ [Enum.at(deck, first)] ++ [Enum.at(deck, second)]
+          paired_indices = paired_indices ++ [first] ++ [second]
         end
       end
     end
-    game = Map.put(game, :pairs, pa)
-    game = Map.put(game, :indices, ind)
-    game = Map.put(game, :selected, se)
-    game = Map.put(game, :moves, mv + 1)
-    Map.put(game, :scard, sc)
+
+    game
+    |> Map.put(:paired_value, paired_value)
+    |> Map.put(:paired_indices, paired_indices)
+    |> Map.put(:selected_indices, selected_indices)
+    |> Map.put(:moves, game.moves + 1)
+    |> Map.put(:selected_value, selected_value)
   end
 
   def shuffle_deck do

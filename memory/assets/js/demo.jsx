@@ -33,11 +33,11 @@ class MemoryGame extends React.Component {
     super(props)
     this.resetTime = null
     this.state = {
-      turned: [],
-      show: [],
-      index: [],
-      tests:[],
-      step: 0,
+      show: [],       // The selected indices of cards
+      completed: [],  // The paired indices of cards
+      skel:[],        // Cards value based on indices,
+                      // "?" If not selected or pairs, otherwise show the value
+      step: 0,        // The click times so far
     }
     this.channel = props.channel;
     this.channel.join()
@@ -51,10 +51,10 @@ class MemoryGame extends React.Component {
   }
 
   sendGuess(i) {
-    if (!this.state.index.includes(i) && !this.state.show.includes(i)) {
-      this.channel.push("test", {"card": i})
+    if (!this.state.completed.includes(i) && !this.state.show.includes(i)) {
+      this.channel.push("guess", {"card": i})
                   .receive("ok", this.gotView.bind(this));
-      if (this.state.show.includes(i) || this.resetTime) {
+      if (this.resetTime) {
         return;
       }
       if (this.state.show.length >= 1) {
@@ -80,44 +80,22 @@ class MemoryGame extends React.Component {
     return (
     <div>
       <div className="restart">
-        <button onClick={() => this.sendRestart()}>Restart</button>
+        <button className="button" onClick={() => this.sendRestart()}>Restart</button>
       </div>
       <div className="score">
         <span>Score: {200 - this.state.step}</span>
       </div>
       <div className="game">
-        {this.state.tests.map((card, i) => {
+        {this.state.skel.map((card, i) => {
           return <Square
             value={card}
             onClick={() => this.sendGuess(i)}
             isTurned={this.state.show.includes(i)}
-            isMatch={this.state.index.includes(i)}
+            isMatch={this.state.completed.includes(i)}
             key={i}/>;
         }, this)}
-      </div>
-      <div>
-        <ButtonValue state={this.state} />
-        <TestValue state={this.state} />
       </div>
     </div>
     );
   }
-}
-
-function TestValue(params) {
-  let state = params.state;
-  return <div>
-    <p>Show Value: {state.show}</p>
-    <p>Turned Value2: {state.turned}</p>
-    <p>Turned Indices: {state.index}</p>
-    <p>Cards:{state.tests}</p>
-    <p>Steps:{state.step}</p>
-  </div>
-}
-
-function ButtonValue(params) {
-  let state = params.state;
-  return <div>
-    <p>Button Value: {state.turned.length}</p>
-  </div>
 }
