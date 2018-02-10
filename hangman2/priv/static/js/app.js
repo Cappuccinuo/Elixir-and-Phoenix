@@ -41393,7 +41393,6 @@ function Word(params) {
     )
   );
 }
-
 function Lives(params) {
   var state = params.state;
   return _react2.default.createElement(

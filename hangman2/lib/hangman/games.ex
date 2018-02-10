@@ -1,4 +1,44 @@
 defmodule Hangman.Game do
+  # Plan A : Store the game as part of the state of the channel.
+  # (Game is in socket.assigns map)
+
+  # Advantages:
+  #  - Game lasts exactly as long as channel
+  #    - No resource leak.
+  #  - Scales well - games are entirely independent
+  # Disadvantages:
+  #  - Crash kills channel, resets game.
+  #  - Game lasts exactly as long as channel.
+  #    - Data loss on disconnect
+
+  # Plan B : GenServer, registered name, Get / Put ops
+  # Advantages:
+  #  - Game state is stored independantly from channel.
+  #    - Immune to crashes, persistant across disconnects.
+  # Disadvantages:
+  #  - Scales poorly. All data in one process.
+  #    - Update still happens in channel, so could be worse
+  #  - We have data races. A = get, B = get, put A, put B
+  #  - Memory leak. Games are never deleted.
+
+  # Plan C : One global Agent with a map.
+  # Just like plan B except:
+  #  - Modifications are sequential in Agent process.
+  #  - No data races.
+  #  - Slower
+
+  # Plan D : One Agent Per Game, Global game => Agent PID map
+  #  - Only need to access global map once/channel
+  #    - Otherwise, entirely independant.
+  #  - Resource leaks are slightly worse than before.
+  #  - Crash still kills that game's data
+
+  # Plan E : One global agent with a map, put/get ops, treat as backup.
+  #  - Primary game copy stored in channel.
+  #  - Can recover from crash or disconnect.
+  #  - Still leak resources.
+  #  - There's an edge case data race.
+  #  - Different players of the same game get separate states.
   def new do
     %{
       word: next_word(),

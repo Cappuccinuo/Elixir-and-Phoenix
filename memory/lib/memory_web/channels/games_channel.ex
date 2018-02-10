@@ -1,13 +1,10 @@
 defmodule MemoryWeb.GamesChannel do
   use MemoryWeb, :channel
   alias Memory.Game
-  alias Memory.BackupChannel.Monitor
+
   def join("games:" <> name, payload, socket) do
     if authorized?(payload) do
-      #game = Repo.get(Game, name)
-      #send(self, {:after_join, game})
-      #{:ok, %{game: game}, assign(socket, :game, game)}
-      game = Game.new()
+      game = Memory.GameBackup.load(name) || Game.new
       socket = socket
       |> assign(:game, game)
       |> assign(:name, name)
@@ -31,6 +28,7 @@ defmodule MemoryWeb.GamesChannel do
 
   def handle_in("test", %{"card" => c}, socket) do
     game = Game.test(socket.assigns[:game], c)
+    Memory.GameBackup.save(socket.assigns[:name], game)
     socket = assign(socket, :game, game)
     {:reply, {:ok, %{"game" => Game.client_view(game)}}, socket}
   end
