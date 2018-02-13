@@ -64,8 +64,10 @@ exports.config = {
 
   npm: {
     enabled: true,
-    globals: {
+    npm: {
+      globals: {
       $: 'jquery'
+      }
     }
   }
 };

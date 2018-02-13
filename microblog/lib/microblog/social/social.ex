@@ -35,8 +35,10 @@ defmodule Microblog.Social do
       ** (Ecto.NoResultsError)
 
   """
-  def get_post!(id), do: Repo.get!(Post, id)
-
+  def get_post!(id) do
+     Repo.get!(Post, id)
+     |> Repo.preload(:user)
+  end
   @doc """
   Creates a post.
 
