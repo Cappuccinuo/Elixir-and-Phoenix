@@ -1,6 +1,26 @@
+<h1>Log In</h1>
+<!-- session_path(@conn, :create) -->
+<%= form_tag("/session", method: :post) do %>
+  <div class="form-group">
+    Email
+    <input type="email" name="email" placeholder="user@example.com" />
+  </div>
+  <!-- passwords come later -->
+  <div class="form-group">
+    <button class="btn btn-primary">Log in</button>
+    <%= link "Register", to: user_path(@conn, :new) %>
+  </div>
+<% end %>
+
 <div class="row">
-  <div class="col">
-    <h1>page/index</h1>
-    <p>TODO: App</p>
+  <div class="col-3 offset-9">
+    <%= if @current_user do %>
+      <p>
+        Logged in as: <%= @current_user.name %> |
+        <%= link "Log Out", to: "/session", method: :delete %>
+      </p>
+    <% else %>
+      <p>Not logged in.</p>
+    <% end %>
   </div>
 </div>

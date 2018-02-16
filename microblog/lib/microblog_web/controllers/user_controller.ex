@@ -1,3 +1,5 @@
+# seven routes, the first place to handle request
+
 defmodule MicroblogWeb.UserController do
   use MicroblogWeb, :controller
 

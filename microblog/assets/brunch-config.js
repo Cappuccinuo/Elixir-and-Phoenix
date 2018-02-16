@@ -20,7 +20,7 @@ exports.config = {
       // }
     },
     stylesheets: {
-      joinTo: "css/app.scss"
+      joinTo: "css/app.css"
     },
     templates: {
       joinTo: "js/app.js"
@@ -64,10 +64,8 @@ exports.config = {
 
   npm: {
     enabled: true,
-    npm: {
-      globals: {
+    globals: {
       $: 'jquery'
-      }
     }
   }
 };

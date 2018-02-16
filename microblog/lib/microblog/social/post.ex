@@ -12,6 +12,9 @@ defmodule Microblog.Social.Post do
   end
 
   @doc false
+  # do validation
+  # cast data type match schema
+  # validate_required check null
   def changeset(%Post{} = post, attrs) do
     post
     |> cast(attrs, [:body, :user_id])

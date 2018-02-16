@@ -19,6 +19,7 @@ defmodule Microblog.Social do
   """
   def list_posts do
     Repo.all(Post)
+    |> Repo.preload(:user)
   end
 
   @doc """

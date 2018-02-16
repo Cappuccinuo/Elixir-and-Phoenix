@@ -21,3 +21,6 @@
     <%= submit "Submit", class: "btn btn-primary" %>
   </div>
 <% end %>
+
+
+<!-- edit or create a user -->
