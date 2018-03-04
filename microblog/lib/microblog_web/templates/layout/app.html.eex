@@ -12,6 +12,19 @@
   </head>
 
   <body>
+    <div class="row">
+      <div class="col-3 offset-9">
+        <%= if @current_user do %>
+          <p>
+            Logged in as: <%= @current_user.name %> |
+            <%= link "Log Out", to: "/session", method: :delete %>
+          </p>
+        <% else %>
+          <p>Not logged in.</p>
+        <% end %>
+      </div>
+    </div>
+
     <div class="container">
       <%= if get_flash(@conn, :info) do %>
         <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>

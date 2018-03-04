@@ -105,6 +105,6 @@ defmodule Microblog.Accounts do
   def get_user(id), do: Repo.get(User, id)
 
   def get_user_by_email(email) do
-    Repo.get_by(User, email: email)
+    Repo.get_by(User, email: email) # key - value
   end
 end

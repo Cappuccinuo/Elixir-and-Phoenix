@@ -7,7 +7,8 @@ defmodule MicroblogWeb.PageController do
 
   def feed(conn, _params) do
     posts = Microblog.Social.list_posts()
-    changeset = Microblog.Social.change_post(%Microblog.Social.Post{})
+    new_post = %Microblog.Social.Post{ user_id: conn.assigns[:current_user].id }
+    changeset = Microblog.Social.change_post(new_post)
     render conn, "feed.html", posts: posts, changeset: changeset
   end
 end
